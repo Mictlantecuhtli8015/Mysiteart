@@ -47,3 +47,22 @@ CREATE TABLE IF NOT EXISTS transacciones (
     FOREIGN KEY (id_comprador) REFERENCES usuarios(id_usuario) ON DELETE CASCADE,
     FOREIGN KEY (id_obra) REFERENCES obras(id_obra) ON DELETE CASCADE
 );
+
+-- Tabla de Mensajes entre usuarios y administradores
+CREATE TABLE IF NOT EXISTS mensajes (
+    id_mensaje INT AUTO_INCREMENT PRIMARY KEY,
+    id_emisor INT NOT NULL,
+    id_receptor INT NOT NULL, -- 0 para mensajes grupales a administradores
+    asunto VARCHAR(150) NOT NULL,
+    contenido TEXT NOT NULL,
+    fecha_envio TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    leido BOOLEAN DEFAULT FALSE,
+    id_mensaje_respuesta INT DEFAULT NULL, -- Respuesta a otro mensaje
+    FOREIGN KEY (id_emisor) REFERENCES usuarios(id_usuario) ON DELETE CASCADE,
+    FOREIGN KEY (id_receptor) REFERENCES usuarios(id_usuario) ON DELETE CASCADE,
+    FOREIGN KEY (id_mensaje_respuesta) REFERENCES mensajes(id_mensaje) ON DELETE SET NULL
+);
+
+ALTER TABLE mensajes
+ADD COLUMN id_mensaje_respuesta INT NULL,
+ADD FOREIGN KEY (id_mensaje_respuesta) REFERENCES mensajes(id_mensaje) ON DELETE SET NULL;
