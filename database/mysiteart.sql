@@ -66,3 +66,18 @@ CREATE TABLE IF NOT EXISTS mensajes (
 ALTER TABLE mensajes
 ADD COLUMN id_mensaje_respuesta INT NULL,
 ADD FOREIGN KEY (id_mensaje_respuesta) REFERENCES mensajes(id_mensaje) ON DELETE SET NULL;
+
+
+-- Tabla para registrar acciones administrativas sobre contenido
+CREATE TABLE IF NOT EXISTS moderaciones (
+    id_moderacion INT AUTO_INCREMENT PRIMARY KEY,
+    id_admin INT NOT NULL,
+    id_usuario INT NOT NULL,
+    tipo_contenido VARCHAR(50) NOT NULL, -- obra, mensaje, comentario
+    id_contenido INT NOT NULL,
+    razon TEXT NOT NULL,
+    accion VARCHAR(50) NOT NULL, -- eliminar, advertencia, bloqueo
+    fecha_moderacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (id_admin) REFERENCES usuarios(id_usuario),
+    FOREIGN KEY (id_usuario) REFERENCES usuarios(id_usuario)
+);

@@ -13,6 +13,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $asunto = limpiarEntrada($_POST['asunto']);
     $contenido = limpiarEntrada($_POST['contenido']);
 
+    if (contienePalabrasProhibidas($contenido)) {
+        echo json_encode([
+            'status' => 'error',
+            'message' => 'Tu mensaje contiene lenguaje inapropiado y ha sido bloqueado por el sistema.'
+        ]);
+        exit;
+    }
+    
+
     $enviado = MensajeController::enviarMensaje($emisor, $receptor, $asunto, $contenido);
 
     if ($enviado) {

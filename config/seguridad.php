@@ -55,4 +55,15 @@ function verificarIntentosLogin($correo) {
     }
 }
 
+// --- Filtro que reemplaza lenguaje ofensivo con #####
+function filtrarPalabrasProhibidas($texto) {
+    $prohibidas = ['idiota', 'estúpido', 'mierda', 'puta', 'imbécil', 'maldito'];
+    foreach ($prohibidas as $palabra) {
+        $regex = '/\b' . preg_quote($palabra, '/') . '\b/i';
+        $texto = preg_replace($regex, '#####', $texto);
+    }
+    return $texto;
+}
+
+
 ?>

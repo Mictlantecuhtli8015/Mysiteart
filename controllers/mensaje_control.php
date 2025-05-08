@@ -5,29 +5,32 @@ require_once __DIR__ . '/../config/security.php';
 
 class MensajeController {
 
-    // Enviar un mensaje (incluye soporte para mensajes a administradores en grupo)
-    public static function enviarMensaje($emisor, $receptor, $asunto, $contenido) {
+    // Enviar un mensaje tipo chat
+    public static function enviarMensaje($emisor, $receptor, $contenido, $respuesta_a = null) {
         global $conn;
-        $sql = "INSERT INTO mensajes (id_emisor, id_receptor, asunto, contenido) VALUES (:emisor, :receptor, :asunto, :contenido)";
+        $sql = "INSERT INTO mensajes (id_emisor, id_receptor, contenido, id_mensaje_respuesta)
+                VALUES (:emisor, :receptor, :contenido, :respuesta_a)";
         $stmt = $conn->prepare($sql);
         return $stmt->execute([
             'emisor' => $emisor,
-            'receptor' => $receptor, // Si es 0, lo ven todos los admins
-            'asunto' => $asunto,
-            'contenido' => $contenido
+            'receptor' => $receptor,
+            'contenido' => filtrarPalabrasProhibidas($contenido),
+            'respuesta_a' => $respuesta_a
         ]);
     }
 
-    // Obtener mensajes según el tipo de usuario
+    // Obtener mensajes tipo chat
     public static function obtenerMensajes($usuario_id, $es_admin = false) {
         global $conn;
 
         if ($es_admin) {
-            // Admin ve mensajes dirigidos a id_receptor = 0 (mensajes grupales)
-            $sql = "SELECT * FROM mensajes WHERE id_receptor = 0 OR id_receptor = :id ORDER BY fecha_envio DESC";
+            $sql = "SELECT * FROM mensajes 
+                    WHERE id_receptor = 0 OR id_receptor = :id OR id_emisor = :id
+                    ORDER BY fecha_envio ASC";
         } else {
-            // Usuario ve mensajes que le enviaron directamente
-            $sql = "SELECT * FROM mensajes WHERE id_receptor = :id ORDER BY fecha_envio DESC";
+            $sql = "SELECT * FROM mensajes 
+                    WHERE id_receptor = :id OR id_emisor = :id
+                    ORDER BY fecha_envio ASC";
         }
 
         $stmt = $conn->prepare($sql);
@@ -41,8 +44,5 @@ class MensajeController {
         $stmt = $conn->prepare($sql);
         return $stmt->execute(['id' => $id_mensaje]);
     }
-
-
 }
-
 ?>
