@@ -9,26 +9,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     verificarAutenticacion();
 
     $emisor = $_SESSION['usuario_id'];
-    $receptor = limpiarEntrada($_POST['receptor']); // Puede ser 0 si va a todos los admins
-    $asunto = limpiarEntrada($_POST['asunto']);
+    $receptor = limpiarEntrada($_POST['receptor']);
     $contenido = limpiarEntrada($_POST['contenido']);
+    $respuesta_a = isset($_POST['respuesta_a']) ? intval($_POST['respuesta_a']) : null;
 
-    if (contienePalabrasProhibidas($contenido)) {
-        echo json_encode([
-            'status' => 'error',
-            'message' => 'Tu mensaje contiene lenguaje inapropiado y ha sido bloqueado por el sistema.'
-        ]);
+    // Validar longitud del mensaje
+    if (strlen($contenido) > 1000) {
+        echo json_encode(["error" => "El mensaje no puede exceder los 1000 caracteres."]);
         exit;
     }
-    
 
-    $enviado = MensajeController::enviarMensaje($emisor, $receptor, $asunto, $contenido);
+    // Establecer el estado del mensaje como 'Enviado'
+    $estado = 'Enviado'; // En el futuro se podrá actualizar a 'Leído'
+
+    // Enviar mensaje
+    $enviado = MensajeController::enviarMensaje($emisor, $receptor, $contenido, $respuesta_a, $estado);
 
     if ($enviado) {
-        echo json_encode(["message" => "Mensaje enviado correctamente"]);
+        echo json_encode(["message" => "Mensaje enviado correctamente."]);
     } else {
-        echo json_encode(["error" => "Error al enviar el mensaje"]);
+        echo json_encode(["error" => "Error al enviar el mensaje."]);
     }
 }
-
 ?>
