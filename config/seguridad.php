@@ -1,4 +1,10 @@
 <?php
+// Asegurarnos de que no hay salida antes de los headers
+ob_start();
+
+// Configurar manejo de errores
+error_reporting(E_ALL);
+ini_set('display_errors', 0); // Desactivar la salida de errores directa
 
 session_start(); // Iniciar sesión para CSRF y seguridad
 
@@ -14,28 +20,79 @@ function validarCSRF($token) {
     }
 }
 
-// Clave secreta para encriptación AES-256
-$key = 'clave_secreta_segura';
+// Configuración de seguridad
+$key = 'MySiteArt2024SecureKey12345678901234567890123456789012'; // Clave de 32 bytes para AES-256
+$iv = 'MySiteArt2024IV'; // IV de 16 bytes para AES-256-CBC
 
-// Función para encriptar datos sensibles
-function encryptData($data, $key) {
-    $cipher = "AES-256-CBC";
-    $iv = openssl_random_pseudo_bytes(openssl_cipher_iv_length($cipher));
-    $encrypted = openssl_encrypt($data, $cipher, $key, 0, $iv);
-    return base64_encode($iv . $encrypted);
+// Función para encriptar datos
+function encryptData($data, $key, $isEmail = false) {
+    global $iv;
+    
+    try {
+        // Asegurarnos de que el IV tenga exactamente 16 bytes
+        $iv = substr(str_pad($iv, 16, "\0"), 0, 16);
+        
+        // Si es un email, asegurarnos de que esté en minúsculas
+        if ($isEmail) {
+            $data = strtolower($data);
+        }
+        
+        // Encriptar usando AES-256-CBC
+        $encrypted = openssl_encrypt(
+            $data,
+            'AES-256-CBC',
+            $key,
+            OPENSSL_RAW_DATA,
+            $iv
+        );
+        
+        if ($encrypted === false) {
+            throw new Exception('Error en la encriptación: ' . openssl_error_string());
+        }
+        
+        // Convertir a base64 para almacenamiento seguro
+        return base64_encode($encrypted);
+    } catch (Exception $e) {
+        error_log('Error en encryptData: ' . $e->getMessage());
+        throw $e;
+    }
 }
 
-// Función para desencriptar datos sensibles
+// Función para desencriptar datos
 function decryptData($encryptedData, $key) {
-    $cipher = "AES-256-CBC";
-    $data = base64_decode($encryptedData);
-    $ivLength = openssl_cipher_iv_length($cipher);
-    $iv = substr($data, 0, $ivLength);
-    $encrypted = substr($data, $ivLength);
-    return openssl_decrypt($encrypted, $cipher, $key, 0, $iv);
+    global $iv;
+    
+    try {
+        // Asegurarnos de que el IV tenga exactamente 16 bytes
+        $iv = substr(str_pad($iv, 16, "\0"), 0, 16);
+        
+        // Decodificar base64
+        $encryptedData = base64_decode($encryptedData);
+        if ($encryptedData === false) {
+            throw new Exception('Error al decodificar base64');
+        }
+        
+        // Desencriptar
+        $decrypted = openssl_decrypt(
+            $encryptedData,
+            'AES-256-CBC',
+            $key,
+            OPENSSL_RAW_DATA,
+            $iv
+        );
+        
+        if ($decrypted === false) {
+            throw new Exception('Error en la desencriptación: ' . openssl_error_string());
+        }
+        
+        return $decrypted;
+    } catch (Exception $e) {
+        error_log('Error en decryptData: ' . $e->getMessage());
+        throw $e;
+    }
 }
 
-// Protección contra inyección SQL y XSS
+// Función para limpiar entradas
 function limpiarEntrada($dato) {
     return htmlspecialchars(strip_tags(trim($dato)), ENT_QUOTES, 'UTF-8');
 }
@@ -65,5 +122,7 @@ function filtrarPalabrasProhibidas($texto) {
     return $texto;
 }
 
+// Enviar cualquier salida pendiente
+ob_end_flush();
 
 ?>

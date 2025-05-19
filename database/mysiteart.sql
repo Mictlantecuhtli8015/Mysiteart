@@ -52,32 +52,48 @@ CREATE TABLE IF NOT EXISTS transacciones (
 CREATE TABLE IF NOT EXISTS mensajes (
     id_mensaje INT AUTO_INCREMENT PRIMARY KEY,
     id_emisor INT NOT NULL,
-    id_receptor INT NOT NULL, -- 0 para mensajes grupales a administradores
+    id_receptor INT NOT NULL,
     asunto VARCHAR(150) NOT NULL,
     contenido TEXT NOT NULL,
     fecha_envio TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     leido BOOLEAN DEFAULT FALSE,
-    id_mensaje_respuesta INT DEFAULT NULL, -- Respuesta a otro mensaje
+    id_mensaje_respuesta INT DEFAULT NULL,
+    estado ENUM('Enviado', 'Leído') DEFAULT 'Enviado',
     FOREIGN KEY (id_emisor) REFERENCES usuarios(id_usuario) ON DELETE CASCADE,
     FOREIGN KEY (id_receptor) REFERENCES usuarios(id_usuario) ON DELETE CASCADE,
     FOREIGN KEY (id_mensaje_respuesta) REFERENCES mensajes(id_mensaje) ON DELETE SET NULL
 );
-
-ALTER TABLE mensajes
-ADD COLUMN id_mensaje_respuesta INT NULL,
-ADD FOREIGN KEY (id_mensaje_respuesta) REFERENCES mensajes(id_mensaje) ON DELETE SET NULL;
-
 
 -- Tabla para registrar acciones administrativas sobre contenido
 CREATE TABLE IF NOT EXISTS moderaciones (
     id_moderacion INT AUTO_INCREMENT PRIMARY KEY,
     id_admin INT NOT NULL,
     id_usuario INT NOT NULL,
-    tipo_contenido VARCHAR(50) NOT NULL, -- obra, mensaje, comentario
+    tipo_contenido VARCHAR(50) NOT NULL,
     id_contenido INT NOT NULL,
     razon TEXT NOT NULL,
-    accion VARCHAR(50) NOT NULL, -- eliminar, advertencia, bloqueo
+    accion VARCHAR(50) NOT NULL,
     fecha_moderacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (id_admin) REFERENCES usuarios(id_usuario),
     FOREIGN KEY (id_usuario) REFERENCES usuarios(id_usuario)
+);
+
+-- Tabla de Imágenes de Obra
+CREATE TABLE IF NOT EXISTS imagenes_obra (
+    id_imagen INT AUTO_INCREMENT PRIMARY KEY,
+    id_obra INT NOT NULL,
+    url_imagen VARCHAR(255) NOT NULL,
+    orden INT DEFAULT 1,
+    FOREIGN KEY (id_obra) REFERENCES obras(id_obra) ON DELETE CASCADE
+);
+
+-- Tabla de Comentarios
+CREATE TABLE IF NOT EXISTS comentarios (
+    id_comentario INT AUTO_INCREMENT PRIMARY KEY,
+    id_obra INT NOT NULL,
+    id_usuario INT NOT NULL,
+    comentario TEXT NOT NULL,
+    fecha_comentario TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (id_obra) REFERENCES obras(id_obra) ON DELETE CASCADE,
+    FOREIGN KEY (id_usuario) REFERENCES usuarios(id_usuario) ON DELETE CASCADE
 );

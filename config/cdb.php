@@ -1,21 +1,48 @@
 <?php
+// Asegurarnos de que no hay salida antes de los headers
+ob_start();
 
-// Configuración de conexión a la base de datos
-$host = 'localhost';
-$dbname = 'my_site_art';
-$username = 'root';  // Cambiar si tienes un usuario específico
-$password = '';  // Cambiar si tienes una contraseña establecida
+// Configurar manejo de errores
+error_reporting(E_ALL);
+ini_set('display_errors', 0); // Desactivar la salida de errores directa
 
 try {
-    // Crear la conexión con PDO
-    $conn = new PDO("mysql:host=$host;dbname=$dbname;charset=utf8", $username, $password);
+    // Configuración de la base de datos
+    $host = 'localhost';
+    $dbname = 'my_site_art';
+    $username = 'root';
+    $password = '';
     
-    // Configurar el modo de error para lanzar excepciones en caso de fallo
-    $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+    // Crear conexión PDO
+    $conn = new PDO(
+        "mysql:host=$host;dbname=$dbname;charset=utf8mb4",
+        $username,
+        $password,
+        [
+            PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+            PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+            PDO::ATTR_EMULATE_PREPARES => false
+        ]
+    );
+    
+    // Verificar la conexión
+    $conn->query("SELECT 1");
     
 } catch (PDOException $e) {
-    // En caso de error, mostrar mensaje y detener ejecución
-    die("Error de conexión: " . $e->getMessage());
+    error_log('Error de conexión a la base de datos: ' . $e->getMessage());
+    header('Content-Type: application/json');
+    echo json_encode([
+        'success' => false,
+        'message' => 'Error de conexión a la base de datos',
+        'debug' => [
+            'error' => $e->getMessage(),
+            'code' => $e->getCode()
+        ]
+    ]);
+    exit;
 }
+
+// Enviar cualquier salida pendiente
+ob_end_flush();
 
 ?>

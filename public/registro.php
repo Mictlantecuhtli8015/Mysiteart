@@ -57,13 +57,6 @@ try {
         throw new Exception('Conexión a la base de datos no establecida');
     }
 
-    // Verificar que podemos acceder a la base de datos
-    try {
-        $conn->query("SELECT 1");
-    } catch (PDOException $e) {
-        throw new Exception('Error al conectar con la base de datos: ' . $e->getMessage());
-    }
-
     // Obtener datos JSON del cuerpo de la solicitud
     $json = file_get_contents('php://input');
     if ($json === false) {
@@ -82,10 +75,7 @@ try {
         'debug' => [
             'json_received' => $json,
             'data_decoded' => $data,
-            'request_method' => $_SERVER['REQUEST_METHOD'],
-            'php_version' => PHP_VERSION,
-            'extensions_loaded' => get_loaded_extensions(),
-            'database_connection' => 'OK'
+            'request_method' => $_SERVER['REQUEST_METHOD']
         ]
     ];
 
@@ -98,42 +88,74 @@ try {
         }
 
         // Validar datos requeridos
-        if (!isset($data['correo']) || !isset($data['contraseña'])) {
-            $response['message'] = "Correo y contraseña son requeridos";
+        $campos_requeridos = ['nombre', 'correo', 'contraseña', 'tipo_usuario'];
+        foreach ($campos_requeridos as $campo) {
+            if (!isset($data[$campo]) || empty($data[$campo])) {
+                $response['message'] = "El campo {$campo} es requerido";
+                echo json_encode($response);
+                exit;
+            }
+        }
+
+        // Limpiar y validar datos
+        $nombre = limpiarEntrada($data['nombre']);
+        $correo = strtolower(limpiarEntrada($data['correo']));
+        $contraseña = $data['contraseña'];
+        $tipo_usuario = limpiarEntrada($data['tipo_usuario']);
+
+        // Validar formato de correo
+        if (!filter_var($correo, FILTER_VALIDATE_EMAIL)) {
+            $response['message'] = "El formato del correo electrónico no es válido";
             echo json_encode($response);
             exit;
         }
 
-        // Limpiar y validar datos
-        $correo = strtolower(limpiarEntrada($data['correo']));
-        $contraseña = $data['contraseña'];
+        // Validar tipo de usuario
+        $tipos_validos = ['artista', 'comprador'];
+        if (!in_array($tipo_usuario, $tipos_validos)) {
+            $response['message'] = "Tipo de usuario no válido";
+            echo json_encode($response);
+            exit;
+        }
 
-        // Encriptar correo para búsqueda
+        // Encriptar correo
         $correo_encriptado = encryptData($correo, $key, true);
 
+        // Verificar si el correo ya está registrado
+        $stmt = $conn->prepare("SELECT id_usuario FROM usuarios WHERE correo = ?");
+        $stmt->execute([$correo_encriptado]);
+        if ($stmt->rowCount() > 0) {
+            $response['message'] = "Este correo electrónico ya está registrado";
+            echo json_encode($response);
+            exit;
+        }
+
+        // Hash de la contraseña
+        $contraseña_hash = password_hash($contraseña, PASSWORD_DEFAULT);
+
         try {
-            // Buscar usuario
-            $stmt = $conn->prepare("SELECT id_usuario, nombre, correo, contraseña, tipo_usuario FROM usuarios WHERE correo = ?");
-            $stmt->execute([$correo_encriptado]);
-            $usuario = $stmt->fetch(PDO::FETCH_ASSOC);
+            // Insertar nuevo usuario
+            $stmt = $conn->prepare("
+                INSERT INTO usuarios (nombre, correo, contraseña, tipo_usuario) 
+                VALUES (?, ?, ?, ?)
+            ");
+            
+            $stmt->execute([
+                $nombre,
+                $correo_encriptado,
+                $contraseña_hash,
+                $tipo_usuario
+            ]);
 
-            if ($usuario && password_verify($contraseña, $usuario['contraseña'])) {
-                // Verificar si la sesión ya está iniciada
-                if (session_status() === PHP_SESSION_NONE) {
-                    session_start();
-                }
-                $_SESSION['id_usuario'] = $usuario['id_usuario'];
-                $_SESSION['nombre'] = $usuario['nombre'];
-                $_SESSION['tipo_usuario'] = $usuario['tipo_usuario'];
-
+            if ($stmt->rowCount() > 0) {
                 $response['success'] = true;
-                $response['message'] = "Inicio de sesión exitoso";
-                $response['redirect'] = '/Mysiteart/frontend/index.html';
+                $response['message'] = "Usuario registrado exitosamente";
+                $response['redirect'] = '/Mysiteart/frontend/login.html';
             } else {
-                $response['message'] = "Correo o contraseña incorrectos";
+                $response['message'] = "Error al registrar el usuario";
             }
         } catch (PDOException $e) {
-            $response['message'] = "Error al verificar credenciales: " . $e->getMessage();
+            $response['message'] = "Error al registrar el usuario: " . $e->getMessage();
             $response['debug']['error'] = $e->getMessage();
             $response['debug']['error_code'] = $e->getCode();
         }
@@ -172,4 +194,4 @@ try {
 }
 
 // Enviar la salida
-ob_end_flush();
+ob_end_flush(); 

@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - My Site Art</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="css/navbar.css" rel="stylesheet">
+    <link href="css/dashboard.css" rel="stylesheet">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg bg-white border-bottom">
+        <div class="container-fluid">
+            <div class="d-flex align-items-center">
+                <a href="index.html" class="navbar-brand">
+                    <img src="img/logo.png" alt="Logo My Site Art" class="logo-navbar">
+                    <span>My site art</span>
+                </a>
+                <a href="#faq" class="nav-link ms-4">Preguntas frecuentes</a>
+                <a href="#about" class="nav-link">Acerca de nosotros</a>
+            </div>
+            <div class="d-flex align-items-center ms-auto">
+                <div class="dropdown me-3">
+                    <button class="btn btn-outline-secondary dropdown-toggle" type="button" id="categoriasDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                        Categorías
+                    </button>
+                    <ul class="dropdown-menu" aria-labelledby="categoriasDropdown">
+                        <li><a class="dropdown-item" href="#">Pintura</a></li>
+                        <li><a class="dropdown-item" href="#">Escultura</a></li>
+                        <li><a class="dropdown-item" href="#">Fotografía</a></li>
+                        <li><a class="dropdown-item" href="#">Dibujo</a></li>
+                    </ul>
+                </div>
+                <form class="d-flex me-3" role="search">
+                    <input class="form-control" type="search" placeholder="Buscar..." aria-label="Buscar">
+                </form>
+                <a href="#carrito" class="nav-link"><i class="fas fa-shopping-cart fa-lg"></i></a>
+                <a href="#perfil" class="nav-link"><i class="fas fa-user-circle fa-lg"></i></a>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container">
+        <section class="welcome-section">
+            <h2>Bienvenido a My Site Art</h2>
+            <article class="user-info">
+                <p>Nombre: <span id="userName"></span></p>
+                <p>Tipo de usuario: <span id="userType"></span></p>
+            </article>
+        </section>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Verificar si el usuario está autenticado
+            fetch('/Mysiteart/public/verificar_sesion.php')
+                .then(response => response.json())
+                .then(data => {
+                    if (!data.success) {
+                        window.location.href = '/Mysiteart/frontend/login.html';
+                        return;
+                    }
+                    
+                    // Mostrar información del usuario
+                    document.getElementById('userName').textContent = data.nombre;
+                    document.getElementById('userType').textContent = data.tipo_usuario;
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    window.location.href = '/Mysiteart/frontend/login.html';
+                });
+
+            // Manejar cierre de sesión
+            document.getElementById('logoutBtn').addEventListener('click', function(e) {
+                e.preventDefault();
+                fetch('/Mysiteart/public/logout.php')
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            window.location.href = '/Mysiteart/frontend/login.html';
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                    });
+            });
+        });
+    </script>
+</body>
+</html> 

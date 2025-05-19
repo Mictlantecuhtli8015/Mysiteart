@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Explorar Arte | My Site Art</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="css/navbar.css">
+    <link rel="stylesheet" href="css/explorar.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div id="navbar-container"></div>
+    <div style="height: 20px;"></div>
+    <main class="explorar-main">
+        <div class="pinterest-grid">
+            <!-- Tarjeta de ejemplo 1: una sola imagen -->
+            <div class="art-card">
+                <div class="art-img-container">
+                    <img src="img/arte1.jpg" alt="Obra de arte 1" class="art-img">
+                    <div class="art-hover-panel">
+                        <div class="art-info">
+                            <span class="art-artist">Artista: Juan Pérez</span>
+                            <span class="art-date">Publicado: 2024-06-01</span>
+                            <span class="art-status disponible">Venta</span>
+                        </div>
+                        <div class="art-comments">
+                            <div class="comments-list">
+                                <div class="comment"><b>Ana:</b> ¡Me encanta esta obra!</div>
+                                <div class="comment"><b>Luis:</b> ¿Está disponible en otro tamaño?</div>
+                            </div>
+                            <form class="comment-form">
+                                <input type="text" placeholder="Escribe un comentario...">
+                                <button type="submit"><i class="fas fa-paper-plane"></i></button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                <div class="art-title">Paisaje Moderno</div>
+            </div>
+            <!-- Tarjeta de ejemplo 2: varias imágenes -->
+            <div class="art-card">
+                <div class="art-img-container multi-img">
+                    <img src="img/arte2a.jpg" alt="Obra de arte 2a" class="art-img active">
+                    <img src="img/arte2b.jpg" alt="Obra de arte 2b" class="art-img">
+                    <img src="img/arte2c.jpg" alt="Obra de arte 2c" class="art-img">
+                    <div class="img-nav">
+                        <button class="img-arrow left"><i class="fas fa-chevron-left"></i></button>
+                        <span class="img-counter">1/3</span>
+                        <button class="img-arrow right"><i class="fas fa-chevron-right"></i></button>
+                    </div>
+                    <div class="art-hover-panel">
+                        <div class="art-info">
+                            <span class="art-artist">Artista: María López</span>
+                            <span class="art-date">Publicado: 2024-05-20</span>
+                            <span class="art-status agotado">Agotado</span>
+                        </div>
+                        <div class="art-comments">
+                            <div class="comments-list">
+                                <div class="comment"><b>Carlos:</b> ¡Obra impresionante!</div>
+                            </div>
+                            <form class="comment-form">
+                                <input type="text" placeholder="Escribe un comentario...">
+                                <button type="submit"><i class="fas fa-paper-plane"></i></button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                <div class="art-title">Colores del Alma</div>
+            </div>
+            <!-- Puedes agregar más tarjetas de ejemplo aquí -->
+        </div>
+    </main>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="js/navbar.js"></script>
+    <script src="js/explorar.js"></script>
+</body>
+</html> 

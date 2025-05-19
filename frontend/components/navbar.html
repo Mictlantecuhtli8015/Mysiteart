@@ -1,0 +1,123 @@
+<!-- Barra de navegación principal -->
+<nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom">
+    <div class="container">
+        <!-- Logo -->
+        <a class="navbar-brand" href="index.html">
+            <img src="img/logo.jpg" alt="My Site Art" height="40">
+        </a>
+
+        <!-- Botón de menú para móviles -->
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMain">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <!-- Contenido de la barra de navegación -->
+        <div class="collapse navbar-collapse d-flex justify-content-between w-100" id="navbarMain">
+            <!-- Menú principal -->
+            <ul class="navbar-nav flex-row gap-2" style="margin-left:0;">
+                <li class="nav-item">
+                    <a class="nav-link" href="/Mysiteart/frontend/explorar.html">Explorar</a>
+                </li>
+                <li class="nav-item dropdown">
+                    <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                        Categorías
+                    </button>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="#">Pintura</a></li>
+                        <li><a class="dropdown-item" href="#">Escultura</a></li>
+                        <li><a class="dropdown-item" href="#">Grabado</a></li>
+                        <li><a class="dropdown-item" href="#">Fotografía</a></li>
+                        <li><a class="dropdown-item" href="#">Cerámica</a></li>
+                        <li><a class="dropdown-item" href="#">Textil</a></li>
+                        <li><a class="dropdown-item" href="#">Orfebrería y Joyería</a></li>
+                        <li><a class="dropdown-item" href="#">Vidrio</a></li>
+                    </ul>
+                </li>
+                <li class="nav-item dropdown">
+                    <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                        Social
+                    </button>
+                    <ul class="dropdown-menu">
+                        <li class="dropdown-submenu">
+                            <a class="dropdown-item" href="#" role="button">
+                                <i class="fas fa-calendar-alt me-2"></i>Eventos
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end">
+                                <li><a class="dropdown-item" href="#">Privados</a></li>
+                                <li><a class="dropdown-item" href="#">Públicos</a></li>
+                                <li><a class="dropdown-item" href="#">Comunitarios</a></li>
+                            </ul>
+                        </li>
+                        <li class="dropdown-submenu">
+                            <a class="dropdown-item" href="#" role="button">
+                                <i class="fas fa-share-alt me-2"></i>Redes
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end">
+                                <li><a class="dropdown-item" href="#"><i class="fab fa-instagram me-2"></i>Instagram</a></li>
+                                <li><a class="dropdown-item" href="#"><i class="fab fa-facebook me-2"></i>Facebook</a></li>
+                                <li><a class="dropdown-item" href="#"><i class="fab fa-tiktok me-2"></i>TikTok</a></li>
+                            </ul>
+                        </li>
+                    </ul>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="about.html">Acerca de Nosotros</a>
+                </li>
+            </ul>
+
+            <!-- Contenedor derecho -->
+            <div class="d-flex align-items-center ms-auto gap-2">
+                <form class="d-flex" style="margin-right: 0;">
+                    <div class="input-group">
+                        <input type="search" class="form-control" placeholder="Buscar arte...">
+                        <button class="btn btn-outline-secondary" type="submit">
+                            <i class="fas fa-search"></i>
+                        </button>
+                    </div>
+                </form>
+                <div class="nav-icons">
+                    <a href="cart.html" class="btn btn-link">
+                        <i class="fas fa-shopping-cart"></i>
+                    </a>
+                    <a href="profile.html" class="btn btn-link">
+                        <i class="fas fa-user"></i>
+                    </a>
+                    <button class="btn btn-link" type="button" data-bs-toggle="offcanvas" data-bs-target="#sideMenu">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>
+
+<!-- Menú lateral -->
+<div class="offcanvas offcanvas-end" tabindex="-1" id="sideMenu">
+    <div class="offcanvas-header">
+        <h5 class="offcanvas-title">Menú</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="offcanvas"></button>
+    </div>
+    <div class="offcanvas-body">
+        <div class="list-group">
+            <a href="#" class="list-group-item list-group-item-action">
+                <i class="fas fa-home"></i>Inicio
+            </a>
+            <a href="#" class="list-group-item list-group-item-action">
+                <i class="fas fa-palette"></i>Artistas
+            </a>
+            <a href="#" class="list-group-item list-group-item-action">
+                <i class="fas fa-tags"></i>Ofertas
+            </a>
+            <a href="#" class="list-group-item list-group-item-action">
+                <i class="fas fa-question-circle"></i>Ayuda
+            </a>
+            <a href="#" class="list-group-item list-group-item-action">
+                <i class="fas fa-cog"></i>Configuración
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- Contenedores para los componentes -->
+<div id="cart-container"></div>
+<div id="profile-container"></div> 
